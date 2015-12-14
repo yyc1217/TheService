@@ -17,10 +17,10 @@ public class HelloController {
 	@Autowired
 	private IClientHookService clientHookService;
 
-	@RequestMapping(value = "/hook", method = RequestMethod.POST)
+	@RequestMapping(value = "/github-webhook", method = RequestMethod.POST)
 	public @ResponseBody void hook(@RequestHeader HttpHeaders headers, @RequestBody String body) {
 		
-		this.clientHookService.fireHook(headers, body);
+		this.clientHookService.transferHook(headers, body);
 		
 		return;
 	}
