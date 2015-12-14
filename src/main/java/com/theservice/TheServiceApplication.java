@@ -1,12 +1,12 @@
-package com.fake-github;
+package com.theservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class FakeGithubApplication {
+public class TheServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(FakeGithubApplication.class, args);
+        SpringApplication.run(TheServiceApplication.class, args);
     }
 }
