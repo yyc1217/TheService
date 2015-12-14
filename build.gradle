@@ -34,7 +34,6 @@ configurations {
 
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-cache')
-    compile('org.springframework.boot:spring-boot-starter-data-rest')
     compile('org.springframework.boot:spring-boot-starter-web')
     runtime('org.hsqldb:hsqldb')
     providedRuntime('org.projectlombok:lombok:1.16.6')
