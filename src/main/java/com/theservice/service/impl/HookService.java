@@ -26,7 +26,7 @@ public class HookService implements IHookService {
     @Override
     public void fireUpdatedIssueHook(Issue issue) {
         
-        String body = issue.toString();
+        String body = mockWebhookBody(issue);
         
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
@@ -34,6 +34,10 @@ public class HookService implements IHookService {
         fireHook(headers, body);
     }
     
+    private String mockWebhookBody(Issue issue) {
+        return issue.toString();
+    }
+
     @Override
     public void fireHook(HttpHeaders headers, String body) {
         

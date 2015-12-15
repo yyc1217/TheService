@@ -1,7 +1,5 @@
 package com.theservice.task;
 
-import static org.springframework.util.CollectionUtils.isEmpty;
-
 import java.time.Instant;
 import java.util.List;
 
@@ -26,20 +24,27 @@ public class GithubIssueUpdateCheckTask {
     @Autowired
     private IHookService hookService;
 
+    private Instant checkpoint = Instant.now();
+    
     @Scheduled(fixedRate = 20 * 1000)
     public void checkUpdateEvent() {
         
         logger.info(this.getClass().getSimpleName() + " is fired");
         
-        List<Issue> issues = githubIssueService.pullUpdatedIssuesSince(Instant.parse("2015-12-12T03:40:34Z"));
+        List<Issue> issues = githubIssueService.pullUpdatedIssuesSince(checkpoint);
 
-        issues.forEach(issue -> {
+        for (Issue issue : issues) {
             try {
                 this.hookService.fireUpdatedIssueHook(issue);
             } catch (Exception e) {
+                logger.error("Hook error {}", e);
                 logger.error("Error while fire updated issue hook of {}", issue);
             }
-        });
+        }
+        
+        checkpoint = Instant.now();
+        
+        logger.info("Next checkpoint {}", checkpoint);
     }
 
 }

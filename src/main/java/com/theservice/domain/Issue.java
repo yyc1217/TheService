@@ -32,6 +32,8 @@ public class Issue {
     
     private User user;
     
+    private Label[] labels;
+    
     private Boolean locked;
     
     private Integer comments;
@@ -135,6 +137,14 @@ public class Issue {
         this.user = user;
     }
 
+    public Label[] getLabels() {
+        return labels;
+    }
+
+    public void setLabels(Label[] labels) {
+        this.labels = labels;
+    }
+
     public Boolean getLocked() {
         return locked;
     }
@@ -194,5 +204,5 @@ public class Issue {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
-    }    
+    }
 }
