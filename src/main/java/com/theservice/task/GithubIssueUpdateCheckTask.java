@@ -1,23 +1,21 @@
 package com.theservice.task;
 
-import org.springframework.beans.factory.annotation.Value;
+import java.time.Instant;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.theservice.service.IGithubIssueService;
+
 @Component
 public class GithubIssueUpdateCheckTask {
-
-    @Value("${github.client_id}")
-    private String client_id;
-
-    @Value("${github.client_secret}")
-    private String client_secret;
+    
+    @Autowired
+    private IGithubIssueService githubIssueService;
 
     @Scheduled(fixedRate = 10 * 1000)
     public void checkUpdateEvent() {
-
-        System.out.println("client_id " + client_id);
-        System.out.println("client_secret " + client_secret);
-
+        githubIssueService.pullUpdatedIssuesSince(Instant.now());
+//
     }
 }
