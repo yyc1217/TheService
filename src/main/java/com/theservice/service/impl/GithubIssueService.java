@@ -1,16 +1,23 @@
 package com.theservice.service.impl;
 
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.theservice.domain.Issue;
 import com.theservice.service.IGithubIssueService;
 
 @Service
 public class GithubIssueService implements IGithubIssueService {
 
+    RestTemplate restTemplate = new RestTemplate();
+    
     private static final String PATH = "/repos/{owner}/{repo}/issues";
     
     private String endpoint;
@@ -35,15 +42,18 @@ public class GithubIssueService implements IGithubIssueService {
     }
     
     @Override
-    public void pullUpdatedIssuesSince(Instant since) {
+    public List<Issue> pullUpdatedIssuesSince(Instant since) {
         String owner = "yyc1217";
         String repo = "Merl";
-        pullUpdatedIssues(owner, repo, since);
+        return pullUpdatedIssues(owner, repo, since);
     }
     
     @Override
-    public void pullUpdatedIssues(String owner, String repo, Instant since) {
+    public List<Issue> pullUpdatedIssues(String owner, String repo, Instant since) {
         String url = url(owner, repo, since);
+        ResponseEntity<Issue[]> responseEntity = restTemplate.getForEntity(url, Issue[].class);
+        Issue[] issues = responseEntity.getBody();
+        return Arrays.asList(issues);
     }
     
     protected String url(String owner, String repo, Instant since) {

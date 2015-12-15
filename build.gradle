@@ -38,8 +38,9 @@ dependencies {
 	
 	compile('org.apache.httpcomponents:fluent-hc:4.5.1')
 
+	compile('org.apache.commons:commons-lang3:3.4')
+	
     runtime('org.hsqldb:hsqldb')
-    providedRuntime('org.projectlombok:lombok:1.16.6')
     providedRuntime('org.springframework.boot:spring-boot-starter-tomcat')
     testCompile('org.springframework.boot:spring-boot-starter-test') 
 }
