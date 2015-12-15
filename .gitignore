@@ -95,4 +95,7 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
+
+# project specific
 build
+src/**/github.properties
