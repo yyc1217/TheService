@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.theservice.service.IHookService;
 
 @RestController
-public class HelloController {
+public class HookController {
 
-    private static final Logger logger = LoggerFactory.getLogger(HelloController.class);
+    private static final Logger logger = LoggerFactory.getLogger(HookController.class);
     
 	@Autowired
 	private IHookService hookService;
