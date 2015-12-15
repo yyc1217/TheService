@@ -32,8 +32,6 @@ public class GithubIssueUpdateCheckTask {
         logger.info(this.getClass().getSimpleName() + " is fired");
         
         List<Issue> issues = githubIssueService.pullUpdatedIssuesSince(Instant.parse("2015-12-12T03:40:34Z"));
-        
-        log(issues);
 
         issues.forEach(issue -> {
             try {
@@ -44,17 +42,4 @@ public class GithubIssueUpdateCheckTask {
         });
     }
 
-    private void log(List<Issue> issues) {
-        
-        if (isEmpty(issues)) {
-            logger.info("No updated issue(s).");
-            return;
-        }
-        
-        logger.info("{} updated issue(s) found.", issues.size());
-        
-        if (logger.isDebugEnabled()) {
-            issues.forEach(issue -> logger.debug("Updated issue : {}", issue));
-        }
-    }
 }

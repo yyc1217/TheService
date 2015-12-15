@@ -1,3 +1,0 @@
-server.port: 80
-
-target.url: http://httpbin.org/post
