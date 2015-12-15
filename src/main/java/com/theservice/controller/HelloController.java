@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.theservice.service.IClientHookService;
+import com.theservice.service.IHookService;
 
 @RestController
 public class HelloController {
@@ -20,14 +20,14 @@ public class HelloController {
     private static final Logger logger = LoggerFactory.getLogger(HelloController.class);
     
 	@Autowired
-	private IClientHookService clientHookService;
+	private IHookService hookService;
 
 	@RequestMapping(value = "/github-webhook", method = RequestMethod.POST)
 	public ResponseEntity<String> hook(@RequestHeader HttpHeaders headers, @RequestBody String body) {
 			    
 	    logger.info("github hook with headers {} and body {}", headers, body);
 	    	    
-		this.clientHookService.transferHook(headers, body);
+		this.hookService.fireHook(headers, body);
 		
 		return new ResponseEntity<String>(HttpStatus.OK);
 	}

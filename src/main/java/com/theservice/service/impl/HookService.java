@@ -7,24 +7,39 @@ import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
-import com.theservice.service.IClientHookService;
+import com.theservice.domain.Issue;
+import com.theservice.service.IHookService;
 
 @Service
-public class ClientHookService implements IClientHookService {
+public class HookService implements IHookService {
 
-    private static final Logger logger = LoggerFactory.getLogger(ClientHookService.class);
-
+    @Value("${target.url}")
+    private String targetSystemUrl;
+    
+    private static final Logger logger = LoggerFactory.getLogger(HookService.class);
+    
     @Override
-    public void transferHook(HttpHeaders headers, String body) {
+    public void fireUpdatedIssueHook(Issue issue) {
+        
+        String body = issue.toString();
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
 
-        String notifyUrl = "http://httpbin.org/post";
-
+        fireHook(headers, body);
+    }
+    
+    @Override
+    public void fireHook(HttpHeaders headers, String body) {
+        
         try {
 
-            Request request = request(notifyUrl, headers, body);
+            Request request = request(targetSystemUrl, headers, body);
 
             int statusCode = request.execute()
                                     .returnResponse()
@@ -32,11 +47,11 @@ public class ClientHookService implements IClientHookService {
                                     .getStatusCode();
 
             if (statusCode != 200) {
-                logger.error("{} connection error with status code {}", notifyUrl, statusCode);
+                logger.error("{} connection error with status code {}", targetSystemUrl, statusCode);
             }
 
         } catch (IOException e) {
-            logger.error(notifyUrl + " connection error", e);
+            logger.error(targetSystemUrl + " connection error", e);
         }
     }
 
@@ -67,5 +82,4 @@ public class ClientHookService implements IClientHookService {
     private ContentType contentType(HttpHeaders headers) {
         return ContentType.create(headers.getContentType().getType());
     }
-
 }
