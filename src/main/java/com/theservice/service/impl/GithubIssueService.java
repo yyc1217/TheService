@@ -1,5 +1,7 @@
 package com.theservice.service.impl;
 
+import static java.util.stream.Collectors.toList;
+
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +18,7 @@ import com.theservice.service.IGithubIssueService;
 @Service
 public class GithubIssueService implements IGithubIssueService {
 
-    RestTemplate restTemplate = new RestTemplate();
+    private RestTemplate restTemplate = new RestTemplate();
     
     private static final String PATH = "/repos/{owner}/{repo}/issues";
     
@@ -53,9 +55,13 @@ public class GithubIssueService implements IGithubIssueService {
         String url = url(owner, repo, since);
         ResponseEntity<Issue[]> responseEntity = restTemplate.getForEntity(url, Issue[].class);
         Issue[] issues = responseEntity.getBody();
-        return Arrays.asList(issues);
+        
+        List<Issue> issueList = Arrays.asList(issues);
+        issueList = grepUpdatedIssues(issueList);
+        
+        return issueList;
     }
-    
+
     protected String url(String owner, String repo, Instant since) {
         
         return UriComponentsBuilder
@@ -67,6 +73,14 @@ public class GithubIssueService implements IGithubIssueService {
                 .queryParam("client_id",  client_id)
                 .queryParam("client_secret", client_secret)
                 .buildAndExpand(owner, repo).toString();
+    }
+    
+    private List<Issue> grepUpdatedIssues(List<Issue> issues) {
+        return issues
+                .stream()
+                .filter(Issue::isUpdated)
+                .filter(Issue::isIssue)
+                .collect(toList());
     }
 
 }

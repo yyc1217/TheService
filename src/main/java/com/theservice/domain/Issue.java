@@ -183,6 +183,14 @@ public class Issue {
         this.updated_at = updated_at;
     }
 
+    public boolean isIssue() {
+        return this.pullRequest == null;
+    }
+    
+    public boolean isUpdated() {
+        return this.getUpdated_at().isAfter(this.getCreated_at());
+    }
+    
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
