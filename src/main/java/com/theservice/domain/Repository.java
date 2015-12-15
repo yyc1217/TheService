@@ -6,6 +6,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.theservice.domain.json.InstantDeserializer;
 
 public class Repository {
 
@@ -98,10 +100,13 @@ public class Repository {
     
     private String releases_url;
     
+    @JsonDeserialize(using = InstantDeserializer.class)
     private Instant created_at;
     
+    @JsonDeserialize(using = InstantDeserializer.class)
     private Instant updated_at;
     
+    @JsonDeserialize(using = InstantDeserializer.class)
     private Instant pushed_at;
     
     private String git_url;

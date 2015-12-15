@@ -13,6 +13,11 @@ import com.theservice.domain.Issue;
 import com.theservice.service.IGithubIssueService;
 import com.theservice.service.IHookService;
 
+/**
+ * A schedule task which check whether updated issues exist or not.
+ * @author yyc1217
+ *
+ */
 @Component
 public class GithubIssueUpdateCheckTask {
     
@@ -24,10 +29,16 @@ public class GithubIssueUpdateCheckTask {
     @Autowired
     private IHookService hookService;
 
-    private Instant checkpoint = Instant.now();
-    
-    @Scheduled(fixedRate = 20 * 1000)
-    public void checkUpdateEvent() {
+    /**
+     * Get first checkpoint when system startup.
+     */
+    private Instant checkpoint = refreshCheckpoint();
+
+    /**
+     * Check updated issue(s) are exist or not by fixed rate.
+     */
+    @Scheduled(fixedDelay = 20 * 1000)
+    public void checkUpdatedIssues() {
         
         logger.info(this.getClass().getSimpleName() + " is fired");
         
@@ -42,9 +53,11 @@ public class GithubIssueUpdateCheckTask {
             }
         }
         
-        checkpoint = Instant.now();
-        
+        checkpoint = refreshCheckpoint(); //  Get next checkpoint when previous tasks is done.        
         logger.info("Next checkpoint {}", checkpoint);
     }
 
+    private Instant refreshCheckpoint() {
+        return Instant.now();
+    }
 }

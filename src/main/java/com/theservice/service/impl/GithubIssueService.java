@@ -34,7 +34,7 @@ public class GithubIssueService implements IGithubIssueService {
     
     private static final Logger logger = LoggerFactory.getLogger(GithubIssueService.class);
     
-    private static final String PATH = "/repos/{owner}/{repo}/issues";
+    private static final String ISSUES_PATH = "/repos/{owner}/{repo}/issues";
     
     private RestTemplate restTemplate = new RestTemplate();
     
@@ -44,6 +44,7 @@ public class GithubIssueService implements IGithubIssueService {
     @Value("${repos.filename}")
     private String repoListFilename;
     
+    
     private String endpoint;
     
     @Value("${github.endpoint}")
@@ -51,12 +52,14 @@ public class GithubIssueService implements IGithubIssueService {
         this.endpoint = endpoint;
     }
 
+    
     private String client_id;
     
     @Value("${github.client_id}")
     public void setClientId(String client_id) {
         this.client_id = client_id;
     }
+    
     
     private String client_secret;
     
@@ -65,12 +68,18 @@ public class GithubIssueService implements IGithubIssueService {
         this.client_secret = client_secret;
     }
     
+    
     private List<RepoInfo> repoList;
     
+    /**
+     * Read repos that we want to monitor from file.
+     * @throws IOException
+     */
     @PostConstruct
     public void readRepos() throws IOException {
         
         URI uri = resourceLoader.getResource("classpath:" + repoListFilename).getURI();
+        
         Path path = Paths.get(uri);
 
         repoList = Files.lines(path)
@@ -79,6 +88,11 @@ public class GithubIssueService implements IGithubIssueService {
                         .collect(toList());
     }
     
+    /**
+     * A simple data holder class.
+     * @author yyc1217
+     *
+     */
     static class RepoInfo {
         String owner;
         String repo;
@@ -88,25 +102,39 @@ public class GithubIssueService implements IGithubIssueService {
             this.repo = infos[1];
         }
     }
-        
+    
+    /**
+     * Pull updated issues from github after since.
+     * @param since All updated issues after this checkpoint will be pulled.
+     * @return
+     */
     @Override
     public List<Issue> pullUpdatedIssuesSince(Instant since) {
         
         List<Issue> returnList = new ArrayList<Issue>();
         
         for (RepoInfo info : repoList) {
+            
             List<Issue> issueList = pullUpdatedIssues(info.owner, info.repo, since);
-            log(info.owner, info.repo, issueList);
             returnList.addAll(issueList);
+            
+            log(info.owner, info.repo, issueList);
         }
         
         return returnList;
     }
     
+    /**
+     * Pull updated issues from github after since which is the repo belongs to owner.
+     * @param owner
+     * @param repo
+     * @param since All updated issues after this checkpoint will be pulled.
+     * @return
+     */
     @Override
     public List<Issue> pullUpdatedIssues(String owner, String repo, Instant since) {
         
-        String url = constructUrl(owner, repo, since);
+        String url = buildIssueUrl(owner, repo, since);
         
         ResponseEntity<Issue[]> responseEntity = restTemplate.getForEntity(url, Issue[].class);
         Issue[] issues = responseEntity.getBody();
@@ -116,12 +144,20 @@ public class GithubIssueService implements IGithubIssueService {
         return issueList;
     }
 
-    protected String constructUrl(String owner, String repo, Instant since) {
+    /**
+     * Using {@link UriComponentsBuilder} to build issues api url.
+     * To get higher rate limit of github, we use client_id and client_secret.
+     * @param owner
+     * @param repo
+     * @param since
+     * @return url
+     */
+    protected String buildIssueUrl(String owner, String repo, Instant since) {
         
         return UriComponentsBuilder.newInstance()
                                    .host(endpoint)
                                    .scheme("https")
-                                   .path(PATH)
+                                   .path(ISSUES_PATH)
                                    .queryParam("since", since)
                                    .queryParam("client_id",  client_id)
                                    .queryParam("client_secret", client_secret)
@@ -129,6 +165,11 @@ public class GithubIssueService implements IGithubIssueService {
                                    .toString();
     }
     
+    /**
+     * Grep updated issues.
+     * @param issues
+     * @return
+     */
     private List<Issue> grepUpdatedIssues(Issue[] issues) {
         
         return Arrays.asList(issues)
@@ -138,18 +179,23 @@ public class GithubIssueService implements IGithubIssueService {
                      .collect(toList());
     }
 
-
-    private void log(String owner, String repo, List<Issue> issues) {
+    /**
+     * Logging updated issues of repo which owned by owner.
+     * @param owner
+     * @param repo
+     * @param updatedIssues
+     */
+    private void log(String owner, String repo, List<Issue> updatedIssues) {
         
-        if (isEmpty(issues)) {
+        if (isEmpty(updatedIssues)) {
             logger.info("No updated issue(s) of owner {} and repo {}.", owner, repo);
             return;
         }
         
-        logger.info("{} updated issue(s) found of owner {} and repo {}.", issues.size(), owner, repo);
+        logger.info("{} updated issue(s) found of owner {} and repo {}.", updatedIssues.size(), owner, repo);
         
         if (logger.isDebugEnabled()) {
-            issues.forEach(issue -> logger.debug("Updated issue : {}", issue));
+            updatedIssues.forEach(issue -> logger.debug("Updated issue : {}", issue));
         }
     }
     

@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
@@ -23,10 +24,15 @@ public class HookService implements IHookService {
     
     private static final Logger logger = LoggerFactory.getLogger(HookService.class);
     
+    /**
+     * Fire hook with headers and body.
+     * @param headers
+     * @param body
+     */
     @Override
-    public void fireUpdatedIssueHook(Issue issue) {
+    public void fireUpdatedIssueHook(Issue updatedIssue) {
         
-        String body = mockWebhookBody(issue);
+        String body = mockWebhookBody(updatedIssue);
         
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
@@ -38,19 +44,23 @@ public class HookService implements IHookService {
         return issue.toString();
     }
 
+    /**
+     * Fire updated issue hook to target system.
+     * @param updatedIssue Updated issue from github.
+     */
     @Override
     public void fireHook(HttpHeaders headers, String body) {
         
         try {
 
-            Request request = request(targetSystemUrl, headers, body);
+            Request request = buildRequest(targetSystemUrl, headers, body);
 
             int statusCode = request.execute()
                                     .returnResponse()
                                     .getStatusLine()
                                     .getStatusCode();
 
-            if (statusCode != 200) {
+            if (statusCode != HttpStatus.OK.value()) {
                 logger.error("{} connection error with status code {}", targetSystemUrl, statusCode);
             }
 
@@ -59,7 +69,14 @@ public class HookService implements IHookService {
         }
     }
 
-    private Request request(String url, HttpHeaders headers, String body) {
+    /**
+     * Build request from url, with headers and body;
+     * @param url
+     * @param headers
+     * @param body
+     * @return
+     */
+    private Request buildRequest(String url, HttpHeaders headers, String body) {
 
         Request request = Request.Post(url)
                                  .useExpectContinue()
@@ -71,6 +88,14 @@ public class HookService implements IHookService {
         return request;
     }
 
+    /**
+     * Copy headers to request.
+     * <br>
+     * Because content_length will be calculated again so remove content_length header.
+     * @param headers
+     * @param request
+     * @return
+     */
     private Request copyHeadersToRequest(HttpHeaders headers, Request request) {
         
         headers.remove(HttpHeaders.CONTENT_LENGTH);
@@ -83,6 +108,11 @@ public class HookService implements IHookService {
         return request;
     }
 
+    /**
+     * Create ContentType from content_type from headers.
+     * @param headers
+     * @return
+     */
     private ContentType contentType(HttpHeaders headers) {
         return ContentType.create(headers.getContentType().getType());
     }

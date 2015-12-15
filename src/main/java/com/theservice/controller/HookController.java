@@ -22,6 +22,12 @@ public class HookController {
 	@Autowired
 	private IHookService hookService;
 
+	/**
+	 * Used to receive webhook from github.
+	 * @param headers headers of request.
+	 * @param body body of request.
+	 * @return status code 200 if ok
+	 */
 	@RequestMapping(value = "/github-webhook", method = RequestMethod.POST)
 	public ResponseEntity<String> hook(@RequestHeader HttpHeaders headers, @RequestBody String body) {
 			    

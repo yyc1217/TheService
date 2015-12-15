@@ -21,7 +21,7 @@ public class GithubIssueServiceTest {
     @Test
     public void testUrl() {
         String expected = "https://fake.api.github.com/repos/yyc1217/Merl/issues?since=2015-12-15T14:02:50.607Z&client_id=fakeId&client_secret=fakeSecret";
-        String actual = githubIssueService.constructUrl("yyc1217", "Merl", Instant.parse("2015-12-15T14:02:50.607Z"));
+        String actual = githubIssueService.buildIssueUrl("yyc1217", "Merl", Instant.parse("2015-12-15T14:02:50.607Z"));
         assertEquals(expected, actual);
     }
 

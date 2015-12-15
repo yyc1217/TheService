@@ -4,9 +4,13 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 public class PullRequest {
+    
     private String url;
+    
     private String html_url;
+    
     private String diff_url;
+    
     private String patch_url;
 
     public String getUrl() {
