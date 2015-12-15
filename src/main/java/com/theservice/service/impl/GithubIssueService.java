@@ -38,34 +38,34 @@ public class GithubIssueService implements IGithubIssueService {
     
     private RestTemplate restTemplate = new RestTemplate();
     
-    private String endpoint;
-
-    private String client_id;
-
-    private String client_secret;
-
-    private List<RepoInfo> repoList;
-    
     @Autowired
     private ResourceLoader resourceLoader;
     
     @Value("${repos.filename}")
     private String repoListFilename;
     
+    private String endpoint;
+    
     @Value("${github.endpoint}")
     public void setEndpoint(String endpoint) {
         this.endpoint = endpoint;
     }
 
+    private String client_id;
+    
     @Value("${github.client_id}")
     public void setClientId(String client_id) {
         this.client_id = client_id;
     }
     
+    private String client_secret;
+    
     @Value("${github.client_secret}")
     public void setClientSecret(String client_secret) {
         this.client_secret = client_secret;
     }
+    
+    private List<RepoInfo> repoList;
     
     @PostConstruct
     public void readRepos() throws IOException {
