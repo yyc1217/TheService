@@ -17,4 +17,4 @@ username2,repository2
 ``$ gradlew cleanEclipse eclipse``
 
 #### War
-``$ gradlew clean build``, **TheService-{version}-SNAPSHOT.war** will under **build/libs**.
+``$ gradlew clean build``, **TheService-{version}-SNAPSHOT.war** will under ``build/libs``.
