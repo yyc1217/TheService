@@ -18,3 +18,6 @@ username2,repository2
 
 #### War
 ``$ gradlew clean build``, **TheService-{version}-SNAPSHOT.war** will under ``build/libs``.
+
+#### Running project in place
+``$ gradlew bootRun``, default port is ``80``.
