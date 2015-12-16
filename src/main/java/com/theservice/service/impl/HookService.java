@@ -1,12 +1,14 @@
 package com.theservice.service.impl;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.apache.http.HttpVersion;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -14,15 +16,23 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import com.theservice.domain.Issue;
+import com.theservice.domain.Playload;
+import com.theservice.domain.Repository;
+import com.theservice.domain.User;
+import com.theservice.service.IGithubUserService;
 import com.theservice.service.IHookService;
 
 @Service
 public class HookService implements IHookService {
-
-    @Value("${target.url}")
-    private String targetSystemUrl;
     
     private static final Logger logger = LoggerFactory.getLogger(HookService.class);
+
+    @Autowired
+    private IGithubUserService githubUserService;
+    
+    @Value("${target.url}")
+    private String targetSystemUrl;    
+
     
     /**
      * Fire hook with headers and body.
@@ -32,7 +42,7 @@ public class HookService implements IHookService {
     @Override
     public void fireUpdatedIssueHook(Issue updatedIssue) {
         
-        String body = mockWebhookBody(updatedIssue);
+        String body = buildMockWebhookBody(updatedIssue);
         
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
@@ -40,8 +50,18 @@ public class HookService implements IHookService {
         fireHook(headers, body);
     }
     
-    private String mockWebhookBody(Issue issue) {
-        return issue.toString();
+    /**
+     * Build body of simulated webhook
+     * @param issue
+     * @return
+     */
+    private String buildMockWebhookBody(Issue issue) {
+        
+        User owner = this.githubUserService.findByOwnerAndRepo(issue.getRepoOwnerUsername(), issue.getRepoName()).get();
+        Repository repository = new Repository(owner);
+        Playload playload = new Playload("updated", issue, repository, owner);
+                
+        return playload.toString();
     }
 
     /**

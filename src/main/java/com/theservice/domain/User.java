@@ -3,7 +3,7 @@ package com.theservice.domain;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-class User {
+public class User {
     private String login;
     
     private Integer id;

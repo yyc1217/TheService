@@ -49,6 +49,10 @@ public class Issue {
     @JsonDeserialize(using = InstantDeserializer.class)
     private Instant updated_at;
 
+    private transient String repoOwnerUsername;
+    
+    private transient String repoName;
+    
     public Integer getId() {
         return id;
     }
@@ -191,6 +195,22 @@ public class Issue {
 
     public void setUpdated_at(Instant updated_at) {
         this.updated_at = updated_at;
+    }
+    
+    public String getRepoOwnerUsername() {
+        return repoOwnerUsername;
+    }
+
+    public void setRepoOwnerUsername(String repoOwnerUsername) {
+        this.repoOwnerUsername = repoOwnerUsername;
+    }
+
+    public String getRepoName() {
+        return repoName;
+    }
+
+    public void setRepoName(String repoName) {
+        this.repoName = repoName;
     }
 
     public boolean isIssue() {

@@ -76,7 +76,7 @@ public class GithubIssueService implements IGithubIssueService {
      * @throws IOException
      */
     @PostConstruct
-    public void readRepos() throws IOException {
+    public void setRepoList() throws IOException {
         
         URI uri = resourceLoader.getResource("classpath:" + repoListFilename).getURI();
         
@@ -140,6 +140,7 @@ public class GithubIssueService implements IGithubIssueService {
         Issue[] issues = responseEntity.getBody();
         
         List<Issue> issueList = grepUpdatedIssues(issues);
+        issueList =  fillRepositoryInfo(issueList, owner, repo);
         
         return issueList;
     }
@@ -179,6 +180,23 @@ public class GithubIssueService implements IGithubIssueService {
                      .collect(toList());
     }
 
+    /**
+     * Fill information of repository which issue issued.
+     * @param issues
+     * @param repo 
+     * @param owner 
+     * @return
+     */
+    private List<Issue> fillRepositoryInfo(List<Issue> issues, String owner, String repo) {
+        
+        issues.forEach(issue -> {
+            issue.setRepoOwnerUsername(owner);
+            issue.setRepoName(repo);
+        });
+        
+        return issues;
+    }
+    
     /**
      * Logging updated issues of repo which owned by owner.
      * @param owner

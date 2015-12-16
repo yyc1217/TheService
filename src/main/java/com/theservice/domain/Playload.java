@@ -13,6 +13,13 @@ public class Playload {
     
     private User sender;
 
+    public Playload(String action, Issue issue, Repository repository, User sender) {
+        this.action = action;
+        this.issue = issue;
+        this.repository = repository;
+        this.sender = sender;        
+    }
+
     public String getAction() {
         return action;
     }

@@ -149,6 +149,10 @@ public class Repository {
     
     private String default_branch;
 
+    public Repository(User owner) {
+       this.owner = owner;
+    }
+
     public Integer getId() {
         return id;
     }
