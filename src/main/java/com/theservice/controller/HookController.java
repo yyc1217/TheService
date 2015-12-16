@@ -31,7 +31,7 @@ public class HookController {
 	@RequestMapping(value = "/github-webhook", method = RequestMethod.POST)
 	public ResponseEntity<String> hook(@RequestHeader HttpHeaders headers, @RequestBody String body) {
 			    
-	    logger.info("github hook with headers {} and body {}", headers, body);
+	    logger.info("Hook fired from github with headers {} \n body {}", headers, body);
 	    	    
 		this.hookService.fireHook(headers, body);
 		
