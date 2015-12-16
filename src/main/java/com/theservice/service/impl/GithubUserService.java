@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.theservice.domain.Repository;
 import com.theservice.domain.User;
 import com.theservice.service.IGithubUserService;
 
@@ -49,17 +50,25 @@ public class GithubUserService implements IGithubUserService {
     @Override
     public Optional<User> findByOwnerAndRepo(String repoOwnerUsername, String repoName) {
         
-        String url = buildUserUrl(repoOwnerUsername, repoName);
-        ResponseEntity<User> responseEntity = restTemplate.getForEntity(url, User.class);
+        String url = buildRepositoryUrl(repoOwnerUsername, repoName);
+        ResponseEntity<Repository> responseEntity = restTemplate.getForEntity(url, Repository.class);
 
         if (HttpStatus.NOT_FOUND.equals(responseEntity.getStatusCode())) {
-            logger.error("User {} and Repository {} not found!", repoOwnerUsername, repoName);
+            logger.error("User {} or Repository {} not found!", repoOwnerUsername, repoName);
             return Optional.empty();
         }
-        return Optional.of(responseEntity.getBody());
+        return Optional.of(responseEntity.getBody().getOwner());
     }
 
-    protected String buildUserUrl(String owner, String repo) {
+    /**
+     * Using {@link UriComponentsBuilder} to build users api url.
+     * To get higher rate limit of github, we use client_id and client_secret.
+     * @param owner
+     * @param repo
+     * @param since
+     * @return url
+     */
+    protected String buildRepositoryUrl(String owner, String repo) {
         
         return UriComponentsBuilder.newInstance()
                                    .host(endpoint)
