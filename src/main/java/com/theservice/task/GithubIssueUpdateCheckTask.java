@@ -54,7 +54,7 @@ public class GithubIssueUpdateCheckTask {
         }
         
         checkpoint = refreshCheckpoint(); //  Get next checkpoint when previous tasks is done.        
-        logger.info("Next checkpoint {}", checkpoint);
+        logger.info(this.getClass().getSimpleName() + " is done, next checkpoint {}", checkpoint);
     }
 
     private Instant refreshCheckpoint() {
