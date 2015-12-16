@@ -35,7 +35,8 @@ public class GithubIssueUpdateCheckTask {
     private Instant checkpoint = refreshCheckpoint();
 
     /**
-     * Check updated issue(s) are exist or not by fixed rate.
+     * Check updated issue(s) are exist or not by fixed rate.<br>
+     * It will get next checkpoint when previous tasks is done.
      */
     @Scheduled(fixedDelay = 20 * 1000)
     public void checkUpdatedIssues() {
@@ -53,7 +54,7 @@ public class GithubIssueUpdateCheckTask {
             }
         }
         
-        checkpoint = refreshCheckpoint(); //  Get next checkpoint when previous tasks is done.        
+        checkpoint = refreshCheckpoint();
         logger.info(this.getClass().getSimpleName() + " is done, next checkpoint {}", checkpoint);
     }
 

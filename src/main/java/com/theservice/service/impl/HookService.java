@@ -2,6 +2,8 @@ package com.theservice.service.impl;
 
 import java.io.IOException;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.ContentType;
@@ -31,7 +33,6 @@ public class HookService implements IHookService {
     
     @Value("${target.url}")
     private String targetSystemUrl;    
-
     
     /**
      * Fire hook with headers and body.
@@ -74,7 +75,12 @@ public class HookService implements IHookService {
 
             Request request = buildRequest(targetSystemUrl, headers, body);
             
-            int statusCode = request.execute().returnResponse().getStatusLine().getStatusCode();
+            HttpResponse response = request.execute().returnResponse();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Target system response: {}", IOUtils.toString(response.getEntity().getContent()));
+            }
+            
+            int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode != HttpStatus.OK.value()) {
                 logger.error("{} connection error with status code {}", targetSystemUrl, statusCode);
             }
