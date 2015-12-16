@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.apache.http.HttpVersion;
 import org.apache.http.client.fluent.Request;
+import org.apache.http.client.fluent.Response;
 import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,11 +76,12 @@ public class HookService implements IHookService {
 
             Request request = buildRequest(targetSystemUrl, headers, body);
 
-            int statusCode = request.execute()
-                                    .returnResponse()
-                                    .getStatusLine()
-                                    .getStatusCode();
-
+            Response response = request.execute();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Target system response content: {}", response.returnContent().asString());
+            }
+            
+            int statusCode = response.returnResponse().getStatusLine().getStatusCode();
             if (statusCode != HttpStatus.OK.value()) {
                 logger.error("{} connection error with status code {}", targetSystemUrl, statusCode);
             }

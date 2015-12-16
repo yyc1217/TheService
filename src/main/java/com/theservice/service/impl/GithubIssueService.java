@@ -206,11 +206,11 @@ public class GithubIssueService implements IGithubIssueService {
     private void log(String owner, String repo, List<Issue> updatedIssues) {
         
         if (isEmpty(updatedIssues)) {
-            logger.info("No updated issue(s) of owner {} and repo {}.", owner, repo);
+            logger.info("No updated issue(s): [owner={}, repo={}]", owner, repo);
             return;
         }
         
-        logger.info("{} updated issue(s) found of owner {} and repo {}.", updatedIssues.size(), owner, repo);
+        logger.info("Found {} updated issue(s): [owner={}, repo={}]", updatedIssues.size(), owner, repo);
         
         if (logger.isDebugEnabled()) {
             updatedIssues.forEach(issue -> logger.debug("Updated issue : {}", issue));

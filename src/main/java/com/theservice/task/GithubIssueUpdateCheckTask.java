@@ -40,7 +40,7 @@ public class GithubIssueUpdateCheckTask {
     @Scheduled(fixedDelay = 20 * 1000)
     public void checkUpdatedIssues() {
         
-        logger.info(this.getClass().getSimpleName() + " is fired");
+        logger.info(this.getClass().getSimpleName() + " is fired.");
         
         List<Issue> issues = githubIssueService.pullUpdatedIssuesSince(checkpoint);
 
