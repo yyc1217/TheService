@@ -1,4 +1,6 @@
 ## The Service
+> A github issues' title and content update hook event service.
+Github webhook has several issue events, i.e. list, create, create comments, but lack of issue title and content update events. This service is a github webhook proxy which has all of github webhook events **plus** issue title and content update event.
 
 ### Prerequisites
 - java 1.8 or above.
